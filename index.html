@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+	<title>WordHtml2</title>
+	
+	<!-- <link> codemirror/lib/codemirror.css -->
+	<style>
+		.CodeMirror {font-family:monospace;height:300px;color:black}
+		.CodeMirror-lines {padding:4px 0}
+		.CodeMirror pre {padding:0 4px}
+		.CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler {background-color:white}
+		.CodeMirror-gutters {border-right:1px solid #ddd;background-color:#f7f7f7;white-space:nowrap}
+		.CodeMirror-linenumbers {}
+		.CodeMirror-linenumber {padding:0 3px 0 5px;min-width:20px;text-align:right;color:#999;white-space:nowrap}
+		.CodeMirror-guttermarker {color:black}
+		.CodeMirror-guttermarker-subtle {color:#999}
+		.CodeMirror-cursor {border-left:1px solid black;border-right:none;width:0}
+		.CodeMirror div.CodeMirror-secondarycursor {border-left:1px solid silver}
+		.cm-fat-cursor .CodeMirror-cursor {width:auto;border:0;background:#7e7}
+		.cm-fat-cursor div.CodeMirror-cursors {z-index:1}
+		.cm-animate-fat-cursor {width:auto;border:0;-webkit-animation:blink 1.06s steps(1) infinite;-moz-animation:blink 1.06s steps(1) infinite;animation:blink 1.06s steps(1) infinite;background-color:#7e7}
+		@-moz-keyframes blink {0% {}
+		50% {background-color:transparent}
+		100% {}
+		}
+		@-webkit-keyframes blink {0% {}
+		50% {background-color:transparent}
+		100% {}
+		}
+		@keyframes blink {0% {}
+		50% {background-color:transparent}
+		100% {}
+		}
+		.CodeMirror-overwrite .CodeMirror-cursor {}
+		.cm-tab {display:inline-block;text-decoration:inherit}
+		.CodeMirror-ruler {border-left:1px solid #ccc;position:absolute}
+		.cm-s-default .cm-header {color:blue}
+		.cm-s-default .cm-quote {color:#090}
+		.cm-negative {color:#d44}
+		.cm-positive {color:#292}
+		.cm-header, .cm-strong {font-weight:bold}
+		.cm-em {font-style:italic}
+		.cm-link {text-decoration:underline}
+		.cm-strikethrough {text-decoration:line-through}
+		.cm-s-default .cm-keyword {color:#708}
+		.cm-s-default .cm-atom {color:#219}
+		.cm-s-default .cm-number {color:#164}
+		.cm-s-default .cm-def {color:#00f}
+		.cm-s-default .cm-variable,
+		.cm-s-default .cm-punctuation,
+		.cm-s-default .cm-property,
+		.cm-s-default .cm-operator {}
+		.cm-s-default .cm-variable-2 {color:#05a}
+		.cm-s-default .cm-variable-3 {color:#085}
+		.cm-s-default .cm-comment {color:#a50}
+		.cm-s-default .cm-string {color:#a11}
+		.cm-s-default .cm-string-2 {color:#f50}
+		.cm-s-default .cm-meta {color:#555}
+		.cm-s-default .cm-qualifier {color:#555}
+		.cm-s-default .cm-builtin {color:#30a}
+		.cm-s-default .cm-bracket {color:#997}
+		.cm-s-default .cm-tag {color:#170}
+		.cm-s-default .cm-attribute {color:#00c}
+		.cm-s-default .cm-hr {color:#999}
+		.cm-s-default .cm-link {color:#00c}
+		.cm-s-default .cm-error {color:#f00}
+		.cm-invalidchar {color:#f00}
+		.CodeMirror-composing {border-bottom:2px solid}
+		div.CodeMirror span.CodeMirror-matchingbracket {color:#0f0}
+		div.CodeMirror span.CodeMirror-nonmatchingbracket {color:#f22}
+		.CodeMirror-matchingtag {background:rgba(255, 150, 0, .3)}
+		.CodeMirror-activeline-background {background:#e8f2ff}
+		.CodeMirror {position:relative;overflow:hidden;background:white}
+		.CodeMirror-scroll {overflow:scroll !important;margin-bottom:-30px;margin-right:-30px;padding-bottom:30px;height:100%;outline:none;position:relative}
+		.CodeMirror-sizer {position:relative;border-right:30px solid transparent}
+		.CodeMirror-vscrollbar, .CodeMirror-hscrollbar, .CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler {position:absolute;z-index:6;display:none}
+		.CodeMirror-vscrollbar {right:0;top:0;overflow-x:hidden;overflow-y:scroll}
+		.CodeMirror-hscrollbar {bottom:0;left:0;overflow-y:hidden;overflow-x:scroll}
+		.CodeMirror-scrollbar-filler {right:0;bottom:0}
+		.CodeMirror-gutter-filler {left:0;bottom:0}
+		.CodeMirror-gutters {position:absolute;left:0;top:0;z-index:3}
+		.CodeMirror-gutter {white-space:normal;height:100%;display:inline-block;margin-bottom:-30px;*zoom:1;*display:inline}
+		.CodeMirror-gutter-wrapper {position:absolute;z-index:4;background:none !important;border:none !important}
+		.CodeMirror-gutter-background {position:absolute;top:0;bottom:0;z-index:4}
+		.CodeMirror-gutter-elt {position:absolute;cursor:default;z-index:4}
+		.CodeMirror-gutter-wrapper {-webkit-user-select:none;-moz-user-select:none;user-select:none}
+		.CodeMirror-lines {cursor:text;min-height:1px}
+		.CodeMirror pre {-moz-border-radius:0;-webkit-border-radius:0;border-radius:0;border-width:0;background:transparent;font-family:inherit;font-size:inherit;margin:0;white-space:pre;word-wrap:normal;line-height:inherit;color:inherit;z-index:2;position:relative;overflow:visible;-webkit-tap-highlight-color:transparent}
+		.CodeMirror-wrap pre {word-wrap:break-word;white-space:pre-wrap;word-break:normal}
+		.CodeMirror-linebackground {position:absolute;left:0;right:0;top:0;bottom:0;z-index:0}
+		.CodeMirror-linewidget {position:relative;z-index:2;overflow:auto}
+		.CodeMirror-widget {}
+		.CodeMirror-code {outline:none}
+		.CodeMirror-scroll,
+		.CodeMirror-sizer,
+		.CodeMirror-gutter,
+		.CodeMirror-gutters,
+		.CodeMirror-linenumber {-moz-box-sizing:content-box;box-sizing:content-box}
+		.CodeMirror-measure {position:absolute;width:100%;height:0;overflow:hidden;visibility:hidden}
+		.CodeMirror-cursor {position:absolute}
+		.CodeMirror-measure pre {position:static}
+		div.CodeMirror-cursors {visibility:hidden;position:relative;z-index:3}
+		div.CodeMirror-dragcursors {visibility:visible}
+		.CodeMirror-focused div.CodeMirror-cursors {visibility:visible}
+		.CodeMirror-selected {background:#d9d9d9}
+		.CodeMirror-focused .CodeMirror-selected {background:#d7d4f0}
+		.CodeMirror-crosshair {cursor:crosshair}
+		.CodeMirror-line::selection, .CodeMirror-line > span::selection, .CodeMirror-line > span > span::selection {background:#d7d4f0}
+		.CodeMirror-line::-moz-selection, .CodeMirror-line > span::-moz-selection, .CodeMirror-line > span > span::-moz-selection {background:#d7d4f0}
+		.cm-searching {background:#ffa;background:rgba(255, 255, 0, .4)}
+		.CodeMirror span {*vertical-align:text-bottom}
+		.cm-force-border {padding-right:.1px}
+		@media print {.CodeMirror div.CodeMirror-cursors {visibility:hidden}
+		}
+		.cm-tab-wrap-hack:after {content:''}
+		span.CodeMirror-selectedtext {background:none}
+	</style>
+	<script src="codemirror/lib/codemirror.js"></script>
+	<script src="codemirror/addon/hint/show-hint.js"></script>
+	<script src="codemirror/addon/hint/xml-hint.js"></script>
+	<script src="codemirror/addon/hint/html-hint.js"></script>
+	<script src="codemirror/mode/xml/xml.js"></script>
+	<script src="codemirror/mode/javascript/javascript.js"></script>
+	<script src="codemirror/mode/css/css.js"></script>
+	<script src="codemirror/mode/htmlmixed/htmlmixed.js"></script>
+	<script src="htmlsanitizer/HtmlSanitizer.js"></script>
+	<script>
+	HtmlSanitizer.AllowedAttributes['align'] = false;
+	HtmlSanitizer.AllowedAttributes['style'] = false;
+	HtmlSanitizer.AllowedAttributes['class'] = false;
+	HtmlSanitizer.AllowedAttributes['type'] = false;
+	</script>
+	<script src="js-beautify/beautify.min.js"></script>
+	<script src="js-beautify/beautify-css.min.js"></script>
+	<script src="js-beautify/beautify-html.min.js"></script>
+	<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		cmeditor = CodeMirror.fromTextArea(document.getElementById('cm'), {
+			styleActiveLine: true,
+			lineNumbers: true,
+			lineWrapping: true,
+			matchBrackets: true,
+			autoCloseBrackets: true,
+			autoCloseTags: true,
+			indentWithTabs: true,
+			toolBar: true,
+			mode: "htmlmixed"
+		});
+	});
+	</script>
+	<script src="tinymce/js/tinymce/tinymce.js"></script>
+	<script>
+	tinymce.init({
+		selector: "#mce",
+		height: "100%",
+		width: "100%",
+		plugins: [
+			'advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker',
+			'searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking',
+			'save table contextmenu directionality emoticons template paste textcolor stylebuttons'
+		],
+		menubar: false,
+		toolbar: 'insertfile undo redo | style-p style-h1 style-h2 style-h3 style-h4 style-h5 style-h6 style-div style-pre code blockquote | bullist numlist indent outdent | bold italic underline strikethrough superscript subscript | alignleft aligncenter alignright alignjustify | link image | media fullpage | forecolor backcolor',
+		selection_toolbar: 'bold italic | quicklink h2 h3 blockquote',
+		setup: function(editor) {
+			editor.on('init', function(e) {
+				console.log('The Editor has initialized.');
+			});
+			editor.on('change keyup', function(e) {
+				var con = this.getContent();
+				cmeditor.setValue(con);
+			});
+		}
+	});
+	</script>
+	<script src="he/he.js"></script>
+	<script>
+	function unwrap(wrapper) {
+		var docFrag = document.createDocumentFragment();
+		while (wrapper.firstChild) {
+			var child = wrapper.removeChild(wrapper.firstChild);
+			docFrag.appendChild(child);
+		}
+		wrapper.parentNode.replaceChild(docFrag, wrapper);
+	}
+	function encode2(s) {
+		return he.encode(s, {
+			'useNamedReferences': true,
+			'decimal': true,
+			'allowUnsafeSymbols': true,
+		});
+	}
+	function decode2(s) {
+		return he.decode(s, {
+			'isAttributeValue': true,
+		});
+	}
+	var cleaned = 0;
+	function cleanhtml() {
+		var val = cmeditor.getValue();
+
+		if (cleaned == 0) {
+			var done = false
+			var parser = new DOMParser();
+			var doc = parser.parseFromString(val, "text/html");
+			val = doc.body.innerHTML;
+			val = decode2(val);
+
+			val = val.replace(/&(em|en)sp;/g, '&nbsp;');
+			val = val.replace(/&nbsp;(&nbsp;){0,}/g, '&nbsp;');
+			val = val.replace(/([^\s])&nbsp;([^\s])/g, '$1 $2');
+			val = HtmlSanitizer.SanitizeHtml(val);
+			// val = val.replace(/[^\x00-\x7F]+/g, '');
+
+			val = val.replace(/(<[a-zA-Z]+>)\s+/g, '$1');
+			val = val.replace(/\s+(<\/[a-zA-Z]+>)/g, '$1');
+
+			val = val.replace(/([^\s])&nbsp;([^\s])/g, '$1 $2');
+			val = val.replace(/([^\.])&nbsp;\s+/g, '$1 ');
+			val = val.replace(/([a-zA-Z"'\(\)])\.\s+([A-Z])/g, '$1.&nbsp; $2');
+
+			val = val.replace(/(<[a-zA-Z]+>)\s+/g, '$1');
+			val = val.replace(/\s+(<\/[a-zA-Z]+>)/g, '$1');
+
+			doc = parser.parseFromString(val, "text/html");
+			while (!done) {
+				done = true;
+				doc.querySelectorAll('span').forEach(function(el) {
+					if (el.attributes.length == 0) {
+						el.outerHTML = el.innerHTML;
+						done = false;
+					}
+				});
+			}
+			done = false;
+			while (!done) {
+				done = true;
+				doc.querySelectorAll('p,span,a,i,b,strong,div,h1,h2,h3,h4,h5,h6').forEach(function(el) {
+					if (el.children.length == 0) {
+						if (el.textContent.trim().length == 0) {
+							el.outerHTML = el.innerHTML;
+							done = false;
+						}
+					}
+				});
+			}
+
+			val = doc.body.innerHTML;
+			cleaned += 1;
+		}
+		else if (cleaned == 1) {
+			var done = false
+			var parser = new DOMParser();
+
+			val = val.replace(/<h(1|2|3|4|5|6)><strong>/g, '<h$1>');
+			val = val.replace(/<\/strong><\/h(1|2|3|4|5|6)>/g, '</h$1>');
+
+			var doc = parser.parseFromString(val, "text/html");
+			doc.querySelectorAll('li').forEach(function(el) {
+				if (el.children.length >= 1) {
+					if (el.children[0].tagName == 'P') {
+						if (el.children.length > 1) {
+							if (['UL', 'OL'].indexOf(el.children[1].tagName) !== -1) {
+								el.children[0].outerHTML = el.children[0].innerHTML;
+							}
+						}
+						else {
+							el.innerHTML = el.children[0].innerHTML;
+						}
+					}
+				}
+			});
+			doc.querySelectorAll('p').forEach(function(el) {
+				if (el.children.length == 1) {
+					if (['BR'].indexOf(el.children[0].tagName) !== -1) {
+						el.removeChild(el.children[0]);
+					}
+				}
+			});
+			done = false
+			doc.querySelectorAll('p').forEach(function(el) {
+				if (el.children.length == 1) {
+					if (el.children[0].tagName == 'STRONG') {
+						el.outerHTML = '<h4>'+el.children[0].innerHTML+'</h4>';
+					}
+				}
+			});
+			val = doc.body.innerHTML;
+			cleaned = 0;
+		}
+		val = decode2(val);
+		val = encode2(val);
+		cmeditor.setValue(val);
+		tinymce.activeEditor.setContent(val);
+		cleannum.textContent = cleaned + 1;
+	}
+	function ol2ul() {
+		var val = cmeditor.getValue();
+		val = val.replace(/<(\/?)ol>/g, '<$1ul>');
+		cmeditor.setValue(val);
+		tinymce.activeEditor.setContent(val);
+	}
+	function h42h2() {
+		var val = cmeditor.getValue();
+		val = val.replace(/<(\/?)h4>/g, '<$1h2>');
+		cmeditor.setValue(val);
+		tinymce.activeEditor.setContent(val);
+	}
+	function h42h3() {
+		var val = cmeditor.getValue();
+		val = val.replace(/<(\/?)h4>/g, '<$1h3>');
+		cmeditor.setValue(val);
+		tinymce.activeEditor.setContent(val);
+	}
+	function h42p() {
+		var val = cmeditor.getValue();
+		val = val.replace(/<(\/?)h4>/g, '<$1p>');
+		cmeditor.setValue(val);
+		tinymce.activeEditor.setContent(val);
+	}
+	function reset() {
+		cmeditor.setValue(tinymce.activeEditor.getContent());
+		cleaned = 0;
+	}
+	</script>
+	<style>
+	.toggleDarkmode { display: none; }
+	body { margin: 0.5em; font-family: Verdana, Arial, Sans-serif; }
+	.mono { font-family: Consolas; }
+	.CodeMirror { border: 1px solid #d5d5d5; border-top: none; height: 376px; }
+	div.mce-tinymce { height: 100%; }
+	div.mce-tinymce > div { display: table; height: 100%; width: 100%; }
+	div.mce-tinymce > div > div { display: table-row; }
+	button { margin: 0.2em; }
+	button[onclick] sup { vertical-align: top; }
+	ol.steps { list-style: none; margin: 0 4vw; padding: 0; display:flex; flex-wrap: wrap; flex-direction: row; box-sizing: border-box; }
+	ol.steps li { width: 50%; box-sizing: border-box; display: inline-block; min-width: 480px; }
+	ol.steps li section { min-height: 400px; }
+	ol.steps li.copy div.tools { padding: 0.5em; background: #f0f0f0; color: #333; border: 1px solid #bbb; }
+	#mceu_22 > div { display: table-cell; border-bottom: 1px solid #D5D5D5; background: #f0f0f0; }
+	#mceu_40 { height: 100%; border: none; }
+	#mceu_40 iframe { display: table-cell; width: 100% !important; height: 100% !important; border: 1px solid #D5D5D5; border-left: none; border-right: none; box-sizing: border-box; }
+	#mceu_41 > div > div:nth-of-type(3) > div:nth-of-type(1) { display: table-cell; border: 1px solid #D5D5D5; background: #f0f0f0; }
+	h1 { text-indent: -99999px; background: url(Word-to-HTML.png) 50% 50%/100% auto no-repeat; height: 15vw; margin-bottom: 0; }
+	h1 + p { text-align: center; }
+	h2 { text-align: center; }
+	.poweredby { margin: 0.2em 0 0 0; font-size: 11px; opacity: 0.35; text-align: center; }
+	.poweredby a { color: inherit; text-decoration: none; }
+	</style>
+</head>
+<body>
+	<h1>Word to HTML</h1>
+	<p>Steps:</p>
+	<ol class="steps">
+		<li class="paste">
+			<section>
+				<h2>1. Paste</h2>
+				<textarea id="mce"></textarea>
+				<p class="poweredby">powered by <a href="https://github.com/tinymce/tinymce">tinymce</a></p>
+			</section>
+		</li>
+		<li class="copy">
+			<section>
+				<h2>2. Copy</h2>
+				<div>
+					<div class="tools">
+						<button onclick="reset()">Reset</button>
+						<button onclick="cleanhtml()">Clean HTML<sup id="cleannum">1</sup></button>
+						&nbsp;
+						<button onclick="cmeditor.setValue(html_beautify(cmeditor.getValue(), {indent_with_tabs:true}))">Beautify HTML</button>
+						<button onclick="cmeditor.setValue(js_beautify(cmeditor.getValue(), {indent_with_tabs:true}))">Beautify JS</button>
+						<button onclick="cmeditor.setValue(css_beautify(cmeditor.getValue(), {indent_with_tabs:true}))">Beautify CSS</button>
+						&nbsp;
+						<button onclick="ol2ul()" class="mono">OL&raquo;UL</button>
+						<button onclick="h42h2()" class="mono">H4&raquo;H2</button>
+						<button onclick="h42h3()" class="mono">H4&raquo;H3</button>
+						<button onclick="h42p()" class="mono">H4&raquo;P</button>
+					</div>
+					<textarea id="cm"></textarea>
+					<p class="poweredby">powered by <a href="https://github.com/codemirror/codemirror5">codemirror</a></p>
+				</div>
+			</section>
+		</li>
+	</ol>
+</body>
+</html>
