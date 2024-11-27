@@ -1,7 +1,7 @@
 # Word to Html
 Convert word to HTML with clean beautify formatting and more.
 
-Open [Word to HTML](https://ryanbriscall.github.io/WordToHtml) now!
+Open [Word to HTML](https://ryanbriscall.github.io/WordToHtml/) now!
 
 ## Changelog
 
